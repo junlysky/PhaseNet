@@ -17,8 +17,8 @@ class Config():
   num_repeat_noise = 1
   sampling_rate = 100
   dt = 1.0/sampling_rate
-  X_shape = [3000, 1, n_channel]
-  Y_shape = [3000, 1, n_class]
+  X_shape = [3000, 1, n_channel]  # [3001, 1, n_channel] or [3000, 1, n_channel] ?
+  Y_shape = [3000, 1, n_class]    #
   min_event_gap = 3 * sampling_rate
 
 
@@ -61,7 +61,7 @@ class DataReader(object):
     output = self.queue.dequeue_many(num_elements)
     return output
 
-  def normalize(self, data):
+  def normalize(self, data):                    ### different from the obspy.core.stream.Stream.normalize
     data -= np.mean(data, axis=0, keepdims=True)
     std_data = np.std(data, axis=0, keepdims=True)
     assert(std_data.shape[-1] == data.shape[-1])
@@ -70,7 +70,7 @@ class DataReader(object):
     return data
 
   def scale_amplitude(self, data):
-    tmp = np.random.uniform(0, 1)
+    tmp = np.random.uniform(0, 1)                #  samples from a uniform distribution
     if tmp < 0.2:
       data *= np.random.uniform(1, 3)
     elif tmp < 0.4:
@@ -87,9 +87,9 @@ class DataReader(object):
         # data *= 3/(c1+c2+c3)
     return data
 
-  def interplate(self, data, itp, its, ratio=1):
+  def interplate(self, data, itp, its, ratio=1):    
     nt = data.shape[0]
-    t = np.linspace(0, 1, nt)
+    t = np.linspace(0, 1, nt)       # ???
     t_new = np.linspace(0, 1, nt*ratio)
     f = scipy.interpolate.interp1d(t, data, axis=0)
     data_new = f(t_new)
